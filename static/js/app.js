@@ -48,16 +48,12 @@ function buildGauge(sample){
   d3.json(url).then(function(sample)  {
 
 
-    console.log("WFREQ sample: "+sample.WFREQ);
     var WFREQ = sample.WFREQ;
-    var guageTitle = "Belly Button Wash Frequency \n Scrubs per week";
+    var guageTitle = "Scrubs per week";
 
-  // // Enter a speed between 0 and 180
-  // var level = 175;
 
   // Trig to calc meter point
-  // var degrees = 180 - level,
-  var degrees = 180 - WFREQ;
+  var degrees = 180 - (WFREQ*15);
       radius = .5;
   var radians = degrees * Math.PI / 180;
   var x = radius * Math.cos(radians);
@@ -72,7 +68,7 @@ function buildGauge(sample){
   var path = mainPath.concat(pathX,space,pathY,pathEnd);
 
   var data = [{ type: 'scatter',
-    x: WFREQ, y:[0],
+    x: [0], y:[0],
       marker: {size: 28, color:'850000'},
       showlegend: false,
       name: 'Scrubs per week',
@@ -149,18 +145,35 @@ function buildCharts(sample) {
     var data1 = [trace2];
     Plotly.newPlot("bubble", data1);
 
+
+    //Sort the sample to get top 10 sample values
+
+    //Create an array of objects for Sample_values.
+    var UnsortedSamples = [];
+    sample.sample_values.map(function(item, index){
+      let origSampleValue = {};
+      origSampleValue.sample_values = item;
+      origSampleValue.index_Value = index;
+      UnsortedSamples.push(origSampleValue);
+    });
     
-       // var sorted_samples = sample.sample_values.sort((a,b) => b -a);
-    // sorted_samples = sorted_samples.slice(0,9);
-    // console.log(sorted_samples);
+    //sort in descending order of sample_values
+    var testSorted = UnsortedSamples.sort(function(obj1, obj2) {
+      return obj2.sample_values - obj1.sample_values;
+    });
 
-    var otu_id = sample.otu_ids;
-    var otu_labels = sample.otu_labels;
-    var sample_values = sample.sample_values;
+    //Get the top 10 sample values 
+    var sample_values = testSorted.map(pair => pair.sample_values).slice(0,9);
+    var orig_index = testSorted.map(pair  => pair.index_Value).slice(0,9);
+    
+    //Get the otu_id, otu_labels corresponding to the top 10 sample values
+    var otu_id = [];
+    var otu_labels = [];
+    for (var i = 0; i<orig_index.length; i++){
+      otu_id.push(sample.otu_ids[orig_index[i]]);
+      otu_labels.push(sample.otu_labels[orig_index[i]]);
 
-    sorted_otu_id = otu_id.sort((a, b) => b - a);
-    sorted_sample_values = sample_values.sort((a, b) => b - a);
-    sorted_otu_labels = otu_labels.sort((a,b)=>b-1);
+    }
 
 
     // @TODO: Build a Pie Chart
@@ -168,18 +181,13 @@ function buildCharts(sample) {
     // otu_ids, and labels (10 each).
     
     //Pie chart
+  
     var trace1 = {
-      labels: sorted_otu_id.slice(0,9),
-      values: sorted_sample_values.slice(0,9),
-      hoverinfo: sorted_otu_labels.slice(0,9),
+      labels: otu_id,
+      values: sample_values,
+      hoverinfo: otu_labels,
       type: 'pie'
-     };
-    // var trace1 = {
-    //   labels: sorted_samples.otu_id,
-    //   values: sorted_samples.sample_values,
-    //   //text: sorted_otu_labels,
-    //   type: 'pie'
-    // };
+    };
     var data = [trace1]; 
     Plotly.newPlot("pie", data);
 
