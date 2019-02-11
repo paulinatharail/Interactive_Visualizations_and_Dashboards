@@ -23,14 +23,12 @@ function buildMetadata(sample) {
     // Hint: Inside the loop, you will need to use d3 to append new
     // tags for each key-value in the metadata.
 
+
     for (var i = 0; i< obj_keys.length; i++){
-      console.log("inside for loop Key" + obj_keys[i]);
-      console.log(obj_values[i]);
       var row = tble.append("tr")
         .attr("id", "rowData")
         .text(obj_keys[i] + ": "+ obj_values[i]);
-        
-        ;
+      
     }
   });
 
@@ -38,40 +36,121 @@ function buildMetadata(sample) {
    
     
     // BONUS: Build the Gauge Chart
-    // buildGauge(data.WFREQ);
+    buildGauge(sample);
+
+
+
+
 }
+
+function buildGauge(sample){
+  url = `/wfreq/${sample}`;
+  d3.json(url).then(function(sample)  {
+
+
+    console.log("WFREQ sample: "+sample.WFREQ);
+    var WFREQ = sample.WFREQ;
+    var guageTitle = "Belly Button Wash Frequency \n Scrubs per week";
+
+  // // Enter a speed between 0 and 180
+  // var level = 175;
+
+  // Trig to calc meter point
+  // var degrees = 180 - level,
+  var degrees = 180 - WFREQ;
+      radius = .5;
+  var radians = degrees * Math.PI / 180;
+  var x = radius * Math.cos(radians);
+  var y = radius * Math.sin(radians);
+
+  // Path: may have to change to create a better triangle
+  var mainPath = 'M -.0 -0.025 L .0 0.025 L ',
+      pathX = String(x),
+      space = ' ',
+      pathY = String(y),
+      pathEnd = ' Z';
+  var path = mainPath.concat(pathX,space,pathY,pathEnd);
+
+  var data = [{ type: 'scatter',
+    x: WFREQ, y:[0],
+      marker: {size: 28, color:'850000'},
+      showlegend: false,
+      name: 'Scrubs per week',
+      text: WFREQ,
+      hoverinfo: 'text'},
+    { values: [50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50],
+    rotation: 90,
+    text: ['8-9',  '7-8', '6-7', '5-6', '4-5',  '3-4','2-3', '1-2', '0-1', ''],
+    textinfo: 'text+name',
+    textposition:'inside',
+    marker: {colors:['rgba(14, 127, 0, .5)', 'rgba(80, 127, 0, .5)',
+                      'rgba(110, 154, 22, .5)','rgba(140, 160, 22, .5)',
+                          'rgba(170, 202, 42, .5)',  'rgba(190, 204, 42, .5)', 
+                          'rgba(202, 209, 95, .5)',
+                          'rgba(210, 206, 145, .5)', 'rgba(232, 226, 202, .5)',
+                          'rgba(255, 255, 255, 0)']},
+    labels: ['8-9',  '7-8', '6-7', '5-6', '4-5',  '3-4','2-3', '1-2', '0-1', ''],
+    hoverinfo: 'label',
+    hole: .5,
+    type: 'pie',
+    showlegend: false
+  }];
+
+  var layout = {
+    shapes:[{
+        type: 'path',
+        path: path,
+        fillcolor: '850000',
+        line: {
+          color: '850000'
+        }
+      }],
+    title: guageTitle,
+    height: 500,
+    width: 500,
+    xaxis: {zeroline:false, showticklabels:false,
+              showgrid: false, range: [-1, 1]},
+    yaxis: {zeroline:false, showticklabels:false,
+              showgrid: false, range: [-1, 1]}
+  };
+
+
+
+
+
+
+
+  // var data = [trace1]; 
+  Plotly.newPlot("gauge", data, layout);
+  });
+}
+
 
 function buildCharts(sample) {
   // @TODO: Use `d3.json` to fetch the sample data for the plots
   
   url = `/samples/${sample}`;
-  console.log(url);
-
   d3.json(url).then(function(sample)  {
 
 
     // @TODO: Build a Bubble Chart using the sample data
-
-    // Bubble chart
     var trace2 = {
-      x: sample.otu_id,
+      x: sample.otu_ids,
       y: sample.sample_values,
       mode: "markers",
       type: "scatter",
       text: sample.otu_labels,
       marker: {
-        color: sample.otu_id,
+        color: sample.otu_ids,
         size: sample.sample_values
       }
     };
 
     var data1 = [trace2];
-
     Plotly.newPlot("bubble", data1);
 
-    //console.log(sample);
-
-    // var sorted_samples = sample.sample_values.sort((a,b) => b -a);
+    
+       // var sorted_samples = sample.sample_values.sort((a,b) => b -a);
     // sorted_samples = sorted_samples.slice(0,9);
     // console.log(sorted_samples);
 
@@ -103,7 +182,6 @@ function buildCharts(sample) {
     // };
     var data = [trace1]; 
     Plotly.newPlot("pie", data);
-    
 
     
   });
