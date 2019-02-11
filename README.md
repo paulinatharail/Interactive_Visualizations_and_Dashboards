@@ -46,4 +46,10 @@ Deploying Flask app to Heroku:
      4) create a Procfile listing all processes needed to run the app (for concurrent requests). In our case, we need only. 
           web: gunicorn app:app
 
+     5) for existing repositories use heroku remote:
+     > heroku git:remote -a belly-button-div-pp-v2
+
+     6) Push to heroku master to deploy app
+     > git push heroku master
+
      App is deployed to: https://belly-button-diversity-pp.herokuapp.com
