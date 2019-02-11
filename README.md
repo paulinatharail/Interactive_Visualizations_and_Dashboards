@@ -25,7 +25,7 @@ Metadata:
 2) Use d3 to select the div with id=sample-metadata.
 3) Append a table to the div and for each row in the metatdata, append a table row to display the contents.
 
-Bonus - Gauge plot:
+Bonus - Gauge chart:
 ---------------------
 1) Create a new route in the flask app /wfreq/<sample> to list the WFREQ value for a sample.
 2) Get the WFREQ object using d3 from the /wfreq/<sample> route
