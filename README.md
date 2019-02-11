@@ -52,4 +52,4 @@ Deploying Flask app to Heroku:
      6) Push to heroku master to deploy app
      > git push heroku master
 
-     App is deployed to: https://belly-button-diversity-pp.herokuapp.com
+     App is deployed to: https://belly-button-div-pp-v2.herokuapp.com
