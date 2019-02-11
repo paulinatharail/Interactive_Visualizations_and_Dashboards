@@ -32,3 +32,18 @@ Bonus - Gauge chart:
 3) Modify the gauge plot code from plot.ly documentation to display a gauge meter with 10 section (9 visible, 1 colored white (invisible)) and the pointer to indicate the wash frequence corresponding to WFREQ.
 
 
+
+
+
+Deploying Flask app to Heroku:
+--------------------------------
+
+     Requirements:
+     -------------
+     1) pip install flask gunicorn
+     2) app.py containing the flask application (that needs to be deployed)
+     3) run `pip freeze > requirements.txt` to create all the dependencies needed for the flask application
+     4) create a Procfile listing all processes needed to run the app (for concurrent requests). In our case, we need only. 
+          web: gunicorn app:app
+
+     App is deployed to: https://belly-button-diversity-pp.herokuapp.com
